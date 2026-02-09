@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FM Weekly Report</title>
+<style>
+  :root{
+    /* Notion/Google-like Light */
+    --bg: #f6f7fb;
+    --panel: #ffffff;
+    --panel2: #ffffff;
+    --stroke: #e6e8ee;
+    --stroke2: #d9dde6;
+
+    --text: #111827;
+    --muted: #4b5563;
+    --muted2: #6b7280;
+
+    --accent: #1a73e8;   /* Google blue */
+    --accent2:#34a853;   /* Google green */
+    --danger:#ea4335;    /* Google red */
+    --warn:#fbbc04;      /* Google yellow */
+
+    --shadow: 0 8px 20px rgba(17,24,39,0.08);
+    --shadow2: 0 2px 8px rgba(17,24,39,0.06);
+    --radius: 14px;
+
+    --input-bg: #ffffff;
+    --input-bg2:#fbfcff;
+    --focus: rgba(26,115,232,0.25);
+  }
+
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    color:var(--text);
+    background:
+      radial-gradient(900px 380px at 20% 0%, rgba(26,115,232,0.10), transparent 60%),
+      radial-gradient(900px 380px at 80% 0%, rgba(52,168,83,0.10), transparent 60%),
+      var(--bg);
+  }
+
+  .wrap{ max-width:1200px; margin:0 auto; padding:22px 16px 60px; }
+
+  header{
+    display:flex; gap:12px; align-items:flex-end; justify-content:space-between;
+    padding:16px 18px 14px;
+    border:1px solid var(--stroke);
+    background: var(--panel);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .title{ display:flex; flex-direction:column; gap:6px; }
+  .title h1{ margin:0; font-size:18px; letter-spacing:0.2px; }
+  .title .sub{ color:var(--muted2); font-size:12px; }
+
+  .kpis{ display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+  .kpi{
+    min-width:160px;
+    padding:10px 12px;
+    border:1px solid var(--stroke);
+    border-radius: 12px;
+    background: var(--panel2);
+    box-shadow: var(--shadow2);
+  }
+  .kpi .label{ font-size:11px; color:var(--muted2); }
+  .kpi .value{ font-size:16px; margin-top:2px; }
+
+  .grid{
+    display:grid;
+    grid-template-columns: 420px 1fr;
+    gap:14px;
+    margin-top:14px;
+  }
+  @media (max-width: 980px){
+    .grid{ grid-template-columns: 1fr; }
+  }
+
+  .card{
+    border:1px solid var(--stroke);
+    border-radius: var(--radius);
+    background: var(--panel);
+    box-shadow: var(--shadow);
+    overflow:hidden;
+  }
+  .card .hd{
+    padding:14px 16px;
+    border-bottom:1px solid var(--stroke);
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background: linear-gradient(180deg, #ffffff, #fbfcff);
+  }
+  .card .hd .t{ font-size:13px; color:var(--muted); letter-spacing:0.15px; }
+  .card .bd{ padding:14px 16px; }
+
+  .row{ display:flex; gap:10px; flex-wrap:wrap; }
+  .row > *{ flex: 1; min-width:140px; }
+
+  label{
+    display:block;
+    font-size:11px;
+    color:var(--muted2);
+    margin:10px 0 6px;
+    letter-spacing:0.12px;
+  }
+
+  input[type="text"], input[type="week"], select, textarea{
+    width:100%;
+    border:1px solid var(--stroke2);
+    background: var(--input-bg);
+    color: var(--text);
+    border-radius: 12px;
+    padding:10px 10px;
+    outline:none;
+    transition: border-color .15s, box-shadow .15s, background .15s;
+  }
+  textarea{ min-height:86px; resize:vertical; background: var(--input-bg2); }
+  input:focus, select:focus, textarea:focus{
+    border-color: rgba(26,115,232,0.55);
+    box-shadow: 0 0 0 4px var(--focus);
+  }
+
+  .help{
+    margin-top:8px;
+    font-size:11px;
+    color:var(--muted2);
+    line-height:1.6;
+  }
+
+  .pill{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:6px 10px;
+    border-radius:999px;
+    border:1px solid var(--stroke);
+    background: #f3f6ff;
+    color: #1f3b77;
+    font-size:12px;
+    white-space:nowrap;
+  }
+  .pill .dot{
+    width:8px; height:8px; border-radius:50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px rgba(26,115,232,0.15);
+  }
+
+  .btns{ display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+  button{
+    border:1px solid var(--stroke2);
+    background: #ffffff;
+    color: var(--text);
+    padding:10px 12px;
+    border-radius: 12px;
+    cursor:pointer;
+    transition: transform .06s, background .15s, border-color .15s, box-shadow .15s;
+    font-weight:600;
+    letter-spacing:0.08px;
+    box-shadow: var(--shadow2);
+  }
+  button:hover{
+    background: #f8fafc;
+    border-color: #cdd5e1;
+  }
+  button:active{ transform: translateY(1px); }
+
+  .primary{
+    border-color: rgba(26,115,232,0.35);
+    background: linear-gradient(180deg, rgba(26,115,232,0.12), rgba(26,115,232,0.06));
+    color: #0b2c66;
+  }
+  .primary:hover{
+    background: linear-gradient(180deg, rgba(26,115,232,0.18), rgba(26,115,232,0.10));
+    border-color: rgba(26,115,232,0.55);
+  }
+  .danger{
+    border-color: rgba(234,67,53,0.35);
+    background: linear-gradient(180deg, rgba(234,67,53,0.10), rgba(234,67,53,0.05));
+    color: #7a1b14;
+  }
+  .danger:hover{ border-color: rgba(234,67,53,0.55); }
+
+  .ghost{
+    background: #ffffff;
+  }
+
+  .dropzone{
+    border:1px dashed #c8d1e0;
+    border-radius: 14px;
+    padding:12px;
+    background: #fbfcff;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:10px;
+  }
+  .dropzone .left{ display:flex; flex-direction:column; gap:4px; }
+  .dropzone .left .a{ font-size:12px; color:var(--text); }
+  .dropzone .left .b{ font-size:11px; color:var(--muted2); }
+  .dropzone input[type="file"]{ width:auto; }
+
+  .preview{
+    margin-top:10px;
+    display:grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap:10px;
+  }
+  @media (max-width: 980px){
+    .preview{ grid-template-columns: 1fr; }
+  }
+  .pv{
+    border:1px solid var(--stroke);
+    border-radius: 14px;
+    background: #ffffff;
+    overflow:hidden;
+    box-shadow: var(--shadow2);
+  }
+  .pv .img{
+    position:relative;
+    height:200px;
+    background: #eef2ff;
+  }
+  .pv img{
+    width:100%; height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .pv .x{
+    position:absolute; top:8px; right:8px;
+    border:1px solid var(--stroke);
+    background: rgba(255,255,255,0.90);
+    width:34px; height:34px;
+    border-radius: 10px;
+    display:grid; place-items:center;
+    cursor:pointer;
+    box-shadow: var(--shadow2);
+  }
+  .pv .x:hover{ border-color: rgba(234,67,53,0.55); }
+  .pv .meta{ padding:10px; }
+  .pv .name{ font-size:11px; color:var(--muted2); margin-bottom:6px; }
+  .pv textarea{ min-height:64px; font-size:12px; background:#fbfcff; }
+
+  .toolbar{
+    display:flex; gap:10px; flex-wrap:wrap;
+  }
+  .toolbar > *{ flex:1; min-width:140px; }
+
+  .feed{ display:flex; flex-direction:column; gap:12px; }
+
+  .post{
+    border:1px solid var(--stroke);
+    background: #ffffff;
+    border-radius: var(--radius);
+    overflow:hidden;
+    box-shadow: var(--shadow);
+  }
+  .post .top{
+    padding:14px 16px 10px;
+    border-bottom:1px solid var(--stroke);
+    display:flex; gap:10px; align-items:flex-start; justify-content:space-between;
+    position:relative;
+  }
+  .post .top:before{
+    content:"";
+    position:absolute;
+    left:0; top:0; bottom:0;
+    width:4px;
+    background: linear-gradient(180deg, rgba(26,115,232,0.9), rgba(52,168,83,0.9));
+  }
+  .post .id{ font-size:12px; color:var(--muted); letter-spacing:0.15px; }
+  .post .when{ font-size:11px; color:var(--muted2); margin-top:4px; }
+
+  .tags{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  .tag{
+    display:inline-flex; align-items:center;
+    padding:6px 10px;
+    border-radius:999px;
+    border:1px solid var(--stroke);
+    background: #f8fafc;
+    font-size:12px;
+    color: #374151;
+  }
+
+  .post .body{ padding:12px 16px 16px; }
+  .post .body .txt{
+    margin:0;
+    white-space:pre-wrap;
+    line-height:1.65;
+    color: #111827;
+  }
+
+  .post .imgs{
+    margin-top:12px;
+    display:grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap:10px;
+  }
+  @media (max-width: 980px){
+    .post .imgs{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 520px){
+    .post .imgs{ grid-template-columns: 1fr; }
+  }
+
+  .imgcard{
+    border:1px solid var(--stroke);
+    border-radius: 14px;
+    overflow:hidden;
+    background: #ffffff;
+    box-shadow: var(--shadow2);
+  }
+  .imgcard img{ width:100%; height:180px; object-fit:cover; display:block; }
+  .imgcard .cap{
+    padding:10px;
+    font-size:12px;
+    color: #374151;
+    white-space:pre-wrap;
+    line-height:1.5;
+    border-top:1px solid var(--stroke);
+    min-height:44px;
+    background:#fbfcff;
+  }
+
+  .post .actions{
+    margin-top:12px;
+    display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;
+  }
+  .leftActions{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .rightActions{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+
+  .likeBtn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:8px 10px;
+    border-radius: 12px;
+    border:1px solid var(--stroke);
+    background: #ffffff;
+    cursor:pointer;
+    font-size:12px;
+    color: #111827;
+    box-shadow: var(--shadow2);
+  }
+  .likeBtn:hover{
+    border-color: rgba(26,115,232,0.45);
+    box-shadow: 0 0 0 4px rgba(26,115,232,0.12);
+  }
+  .likeBtn .heart{ color: var(--danger); }
+
+  .miniBtn{
+    padding:8px 10px;
+    border-radius: 12px;
+    border:1px solid var(--stroke);
+    background: #ffffff;
+    cursor:pointer;
+    font-size:12px;
+    color: #111827;
+    box-shadow: var(--shadow2);
+  }
+  .miniBtn:hover{ border-color: #cdd5e1; background:#f8fafc; }
+  .miniBtn.d:hover{ border-color: rgba(234,67,53,0.55); background: rgba(234,67,53,0.06); }
+
+  .cm{
+    margin-top:12px;
+    border-top:1px solid var(--stroke);
+    padding-top:12px;
+  }
+  .cm .add{
+    display:flex; gap:10px; flex-wrap:wrap;
+    align-items:flex-start;
+  }
+  .cm .add textarea{
+    flex: 1; min-width: 220px;
+    min-height:56px;
+    font-size:12px;
+    background:#fbfcff;
+  }
+  .cm .list{
+    margin:10px 0 0;
+    padding-left:18px;
+    color: #111827;
+  }
+  .cm .list li{ margin:6px 0; color: #374151; }
+
+  .empty{
+    padding:18px;
+    border:1px dashed #c8d1e0;
+    border-radius: var(--radius);
+    color: var(--muted);
+    background: #ffffff;
+    box-shadow: var(--shadow2);
+  }
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="title">
+      <h1>FM Weekly Report</h1>
+      <div class="sub">投稿 → 共有 → フィードバック（いいね / コメント）｜ブラウザ内保存（localStorage）</div>
+    </div>
+    <div class="kpis">
+      <div class="kpi">
+        <div class="label">総投稿数</div>
+        <div class="value" id="kpiTotal">0</div>
+      </div>
+      <div class="kpi">
+        <div class="label">フィルタ後</div>
+        <div class="value" id="kpiShown">0</div>
+      </div>
+      <div class="kpi">
+        <div class="label">今週（ISO週）</div>
+        <div class="value" id="kpiWeek">-</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="grid">
+
+    <!-- Left: Form -->
+    <div class="card">
+      <div class="hd">
+        <div class="t" id="formTitle">新規投稿</div>
+        <div class="pill"><span class="dot"></span><span id="formMode">CREATE</span></div>
+      </div>
+      <div class="bd">
+
+        <div class="row">
+          <div>
+            <label>週（ISO）</label>
+            <input type="week" id="week" />
+          </div>
+          <div>
+            <label>エリア</label>
+            <select id="area">
+              <option value="">（未選択）</option>
+              <option>道央</option><option>道南</option><option>道東</option><option>道北</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>店舗</label>
+            <select id="store">
+              <option value="">（未選択）</option>
+              <option>A店</option><option>B店</option><option>C店</option>
+            </select>
+          </div>
+          <div>
+            <label>部門</label>
+            <select id="dept">
+              <option value="">（未選択）</option>
+              <option>グロサリー</option><option>水産</option><option>畜産</option><option>青果</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>施策カテゴリ</label>
+            <select id="initiative">
+              <option value="">（未選択）</option>
+              <option>チラシ</option><option>平台展開</option><option>価格改定</option><option>売場改善</option><option>在庫/欠品</option><option>オペ改善</option>
+            </select>
+          </div>
+          <div>
+            <label>周知テンプレ（選択で自動反映）</label>
+            <select id="noticeTpl">
+              <option value="">（なし）</option>
+              <option value="【周知】変更点：">【周知】変更点：</option>
+              <option value="【共有】好事例：">【共有】好事例：</option>
+              <option value="【注意】リスク/懸念：">【注意】リスク/懸念：</option>
+              <option value="【依頼】本部対応希望：">【依頼】本部対応希望：</option>
+            </select>
+          </div>
+        </div>
+
+        <label>現場コメント</label>
+        <textarea id="comment" placeholder="例：平台の補充動線が悪く、15分に1回崩れ。端側に位置替えで安定。"></textarea>
+
+        <div class="dropzone" style="margin-top:12px;">
+          <div class="left">
+            <div class="a">画像アップロード（投稿前プレビュー）</div>
+            <div class="b">自動圧縮：最大1280px / 品質0.82（localStorage節約）</div>
+          </div>
+          <input type="file" id="images" multiple accept="image/*" />
+        </div>
+
+        <div id="preview" class="preview"></div>
+
+        <div class="btns">
+          <button class="primary" id="btnSubmit" onclick="submitReport()">投稿する</button>
+          <button class="ghost" id="btnCancel" onclick="cancelEdit()" style="display:none;">編集キャンセル</button>
+          <button class="danger" onclick="clearAll()">全データ削除（ブラウザ内）</button>
+        </div>
+
+        <div class="help">
+          ※ 本番化する場合は保存先を SharePoint / DB に差し替え前提。ここはUI/運用の叩き台。
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Right: Filters + Feed -->
+    <div class="card">
+      <div class="hd">
+        <div class="t">投稿フィード</div>
+        <div class="toolbar" style="max-width:720px;">
+          <select id="sort" onchange="render()">
+            <option value="new">並び：新しい順</option>
+            <option value="likes">並び：いいね順</option>
+          </select>
+          <input type="text" id="q" placeholder="検索（ID/コメント/画像コメント/投稿コメント）" oninput="render()" />
+        </div>
+      </div>
+
+      <div class="bd">
+
+        <div class="toolbar" style="margin-bottom:12px;">
+          <select id="fWeek" onchange="render()">
+            <option value="">週：全て</option>
+          </select>
+          <select id="fArea" onchange="render()">
+            <option value="">エリア：全て</option>
+            <option>道央</option><option>道南</option><option>道東</option><option>道北</option>
+          </select>
+          <select id="fStore" onchange="render()">
+            <option value="">店舗：全て</option>
+            <option>A店</option><option>B店</option><option>C店</option>
+          </select>
+          <select id="fDept" onchange="render()">
+            <option value="">部門：全て</option>
+            <option>グロサリー</option><option>水産</option><option>畜産</option><option>青果</option>
+          </select>
+          <select id="fInit" onchange="render()">
+            <option value="">施策：全て</option>
+            <option>チラシ</option><option>平台展開</option><option>価格改定</option><option>売場改善</option><option>在庫/欠品</option><option>オペ改善</option>
+          </select>
+        </div>
+
+        <div class="btns" style="margin-top:0; margin-bottom:12px;">
+          <button class="ghost" onclick="resetFilters()">フィルタリセット</button>
+          <button class="ghost" onclick="exportJson()">JSONエクスポート</button>
+          <button class="ghost" onclick="importJson()">JSONインポート</button>
+        </div>
+
+        <div id="feed" class="feed"></div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* =========================
+   Storage & State
+========================= */
+const STORAGE_KEY = "fm_reports_v2";
+let reports = load();
+let editingId = null;
+let draftImages = [];
+
+/* =========================
+   Helpers
+========================= */
+function load(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
+  catch(e){ return []; }
+}
+function save(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
+  refreshWeekOptions();
+  updateKpis();
+}
+function nowIso(){ return new Date().toISOString(); }
+function uuid(){
+  if (crypto && crypto.randomUUID) return crypto.randomUUID();
+  return "id-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+}
+function makeReportId(weekStr){
+  const wk = (weekStr || "W??").replace("-", "W");
+  return "FM-" + wk + "-" + uuid().slice(0,8).toUpperCase();
+}
+function toDateLabel(iso){
+  const d = new Date(iso);
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const day = String(d.getDate()).padStart(2,"0");
+  const hh = String(d.getHours()).padStart(2,"0");
+  const mm = String(d.getMinutes()).padStart(2,"0");
+  return `${y}/${m}/${day} ${hh}:${mm}`;
+}
+function escapeHtml(s){
+  return (s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function containsText(report, query){
+  const q = (query || "").trim().toLowerCase();
+  if(!q) return true;
+  const parts = [
+    report.id,
+    report.comment,
+    report.area, report.store, report.dept, report.initiative,
+    ...(report.images || []).map(x => x.memo || ""),
+    ...(report.comments || [])
+  ].join(" ").toLowerCase();
+  return parts.includes(q);
+}
+function getCurrentIsoWeekInputValue(){
+  const date = new Date();
+  const target = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNr = (target.getUTCDay() + 6) % 7;
+  target.setUTCDate(target.getUTCDate() - dayNr + 3);
+  const firstThursday = new Date(Date.UTC(target.getUTCFullYear(),0,4));
+  const diff = target - firstThursday;
+  const week = 1 + Math.round(diff / (7*24*3600*1000));
+  const year = target.getUTCFullYear();
+  return `${year}-W${String(week).padStart(2,"0")}`;
+}
+
+/* =========================
+   Image Compress (DataURL)
+========================= */
+function readAsDataURL(file){
+  return new Promise((resolve,reject)=>{
+    const fr = new FileReader();
+    fr.onload = () => resolve(fr.result);
+    fr.onerror = reject;
+    fr.readAsDataURL(file);
+  });
+}
+async function compressImage(file, maxW=1280, maxH=1280, quality=0.82){
+  const raw = await readAsDataURL(file);
+  const img = new Image();
+  img.src = raw;
+  await new Promise(res => img.onload = res);
+
+  let {width:w, height:h} = img;
+  const ratio = Math.min(maxW / w, maxH / h, 1);
+  const nw = Math.round(w * ratio);
+  const nh = Math.round(h * ratio);
+
+  const canvas = document.createElement("canvas");
+  canvas.width = nw;
+  canvas.height = nh;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0, nw, nh);
+
+  const dataUrl = canvas.toDataURL("image/jpeg", quality);
+  return { dataUrl, name: file.name };
+}
+
+/* =========================
+   Draft / Preview
+========================= */
+function renderPreview(){
+  const box = document.getElementById("preview");
+  if(draftImages.length === 0){ box.innerHTML = ""; return; }
+  box.innerHTML = draftImages.map((x, i)=>`
+    <div class="pv">
+      <div class="img">
+        <img src="${x.dataUrl}">
+        <div class="x" title="この画像を削除" onclick="removeDraftImage(${i})">✕</div>
+      </div>
+      <div class="meta">
+        <div class="name">${escapeHtml(x.name || "image")}</div>
+        <textarea placeholder="画像コメント（この画像だけのメモ）" onchange="updateDraftMemo(${i}, this.value)">${escapeHtml(x.memo||"")}</textarea>
+      </div>
+    </div>
+  `).join("");
+}
+function updateDraftMemo(i, v){ draftImages[i].memo = v; }
+function removeDraftImage(i){ draftImages.splice(i,1); renderPreview(); }
+
+async function onFilesSelected(files){
+  const list = Array.from(files || []);
+  for(const f of list){
+    if(!f.type.startsWith("image/")) continue;
+    const c = await compressImage(f);
+    draftImages.push({ dataUrl: c.dataUrl, memo:"", name: c.name });
+  }
+  renderPreview();
+}
+document.getElementById("images").addEventListener("change", async (e)=>{
+  await onFilesSelected(e.target.files);
+  e.target.value = "";
+});
+
+/* =========================
+   Form Tpl Auto Reflect
+========================= */
+document.getElementById("noticeTpl").addEventListener("change", (e)=>{
+  const v = e.target.value;
+  if(!v) return;
+  const ta = document.getElementById("comment");
+  const cur = ta.value || "";
+  if(cur.startsWith(v)) return;
+  ta.value = v + (cur ? "\n" + cur : "");
+  e.target.value = "";
+});
+
+/* =========================
+   CRUD
+========================= */
+function setFormMode(mode){
+  const isEdit = mode === "EDIT";
+  document.getElementById("formTitle").textContent = isEdit ? "投稿を編集" : "新規投稿";
+  document.getElementById("formMode").textContent = isEdit ? "EDIT" : "CREATE";
+  document.getElementById("btnSubmit").textContent = isEdit ? "更新する" : "投稿する";
+  document.getElementById("btnCancel").style.display = isEdit ? "inline-flex" : "none";
+}
+function resetForm(){
+  editingId = null;
+  setFormMode("CREATE");
+  document.getElementById("week").value = getCurrentIsoWeekInputValue();
+  document.getElementById("area").value = "";
+  document.getElementById("store").value = "";
+  document.getElementById("dept").value = "";
+  document.getElementById("initiative").value = "";
+  document.getElementById("comment").value = "";
+  document.getElementById("noticeTpl").value = "";
+  draftImages = [];
+  renderPreview();
+}
+function cancelEdit(){ resetForm(); }
+function validate(){
+  const wk = document.getElementById("week").value;
+  if(!wk){ alert("週（ISO）を入力してください"); return false; }
+  return true;
+}
+function submitReport(){
+  if(!validate()) return;
+
+  const wk = document.getElementById("week").value;
+  const area = document.getElementById("area").value;
+  const store = document.getElementById("store").value;
+  const dept = document.getElementById("dept").value;
+  const initiative = document.getElementById("initiative").value;
+  const comment = document.getElementById("comment").value;
+
+  if(editingId){
+    const idx = reports.findIndex(r => r.id === editingId);
+    if(idx >= 0){
+      reports[idx] = {
+        ...reports[idx],
+        week: wk, area, store, dept, initiative, comment,
+        images: draftImages.map(x => ({ dataUrl:x.dataUrl, memo:x.memo, name:x.name })),
+        updatedAt: nowIso()
+      };
+      save(); resetForm(); render(); return;
+    }
+  }
+
+  const report = {
+    id: makeReportId(wk),
+    week: wk, area, store, dept, initiative,
+    comment,
+    images: draftImages.map(x => ({ dataUrl:x.dataUrl, memo:x.memo, name:x.name })),
+    likes: 0,
+    comments: [],
+    createdAt: nowIso(),
+    updatedAt: null
+  };
+
+  reports.unshift(report);
+  save(); resetForm(); render();
+}
+function editReport(id){
+  const r = reports.find(x => x.id === id);
+  if(!r) return;
+
+  editingId = id;
+  setFormMode("EDIT");
+
+  document.getElementById("week").value = r.week || getCurrentIsoWeekInputValue();
+  document.getElementById("area").value = r.area || "";
+  document.getElementById("store").value = r.store || "";
+  document.getElementById("dept").value = r.dept || "";
+  document.getElementById("initiative").value = r.initiative || "";
+  document.getElementById("comment").value = r.comment || "";
+  document.getElementById("noticeTpl").value = "";
+
+  draftImages = (r.images || []).map(x => ({
+    dataUrl: x.dataUrl,
+    memo: x.memo || "",
+    name: x.name || "image"
+  }));
+  renderPreview();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+function deleteReport(id){
+  if(!confirm("この投稿を削除します。よろしいですか？")) return;
+  reports = reports.filter(r => r.id !== id);
+  save();
+  if(editingId === id) resetForm();
+  render();
+}
+function likeReport(id){
+  const r = reports.find(x => x.id === id);
+  if(!r) return;
+  r.likes = (r.likes || 0) + 1;
+  save(); render();
+}
+function addComment(id){
+  const ta = document.getElementById("cm_" + id);
+  if(!ta) return;
+  const txt = (ta.value || "").trim();
+  if(!txt) return;
+  const r = reports.find(x => x.id === id);
+  if(!r) return;
+  r.comments = r.comments || [];
+  r.comments.push(txt);
+  ta.value = "";
+  save(); render();
+}
+
+/* =========================
+   Filters / Render
+========================= */
+function resetFilters(){
+  document.getElementById("fWeek").value = "";
+  document.getElementById("fArea").value = "";
+  document.getElementById("fStore").value = "";
+  document.getElementById("fDept").value = "";
+  document.getElementById("fInit").value = "";
+  document.getElementById("q").value = "";
+  document.getElementById("sort").value = "new";
+  render();
+}
+function applyFilters(list){
+  const fw = document.getElementById("fWeek").value;
+  const fa = document.getElementById("fArea").value;
+  const fs = document.getElementById("fStore").value;
+  const fd = document.getElementById("fDept").value;
+  const fi = document.getElementById("fInit").value;
+  const q = document.getElementById("q").value;
+
+  return list.filter(r => {
+    if(fw && (r.week || "") !== fw) return false;
+    if(fa && (r.area || "") !== fa) return false;
+    if(fs && (r.store || "") !== fs) return false;
+    if(fd && (r.dept || "") !== fd) return false;
+    if(fi && (r.initiative || "") !== fi) return false;
+    if(!containsText(r, q)) return false;
+    return true;
+  });
+}
+function sortList(list){
+  const s = document.getElementById("sort").value;
+  const copy = [...list];
+  if(s === "likes"){
+    copy.sort((a,b)=> (b.likes||0) - (a.likes||0) || (new Date(b.createdAt) - new Date(a.createdAt)));
+  }else{
+    copy.sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt));
+  }
+  return copy;
+}
+function render(){
+  const feed = document.getElementById("feed");
+  const filtered = sortList(applyFilters(reports));
+
+  document.getElementById("kpiTotal").textContent = reports.length;
+  document.getElementById("kpiShown").textContent = filtered.length;
+
+  if(filtered.length === 0){
+    feed.innerHTML = `<div class="empty">該当する投稿がありません（フィルタ条件を変更してください）</div>`;
+    return;
+  }
+
+  feed.innerHTML = filtered.map(r => {
+    const created = r.createdAt ? toDateLabel(r.createdAt) : "-";
+    const updated = r.updatedAt ? toDateLabel(r.updatedAt) : null;
+    const tags = [r.week, r.area, r.store, r.dept, r.initiative].filter(Boolean);
+
+    return `
+      <div class="post">
+        <div class="top">
+          <div style="padding-left:6px;">
+            <div class="id"><strong>${escapeHtml(r.id)}</strong></div>
+            <div class="when">作成: ${created}${updated ? ` ／ 更新: ${updated}` : ""}</div>
+            <div class="tags">
+              ${tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("")}
+            </div>
+          </div>
+          <div class="rightActions">
+            <div class="miniBtn" onclick="editReport('${r.id}')">編集</div>
+            <div class="miniBtn d" onclick="deleteReport('${r.id}')">削除</div>
+          </div>
+        </div>
+
+        <div class="body">
+          <p class="txt">${escapeHtml(r.comment || "")}</p>
+
+          ${(r.images && r.images.length) ? `
+            <div class="imgs">
+              ${r.images.map(img => `
+                <div class="imgcard">
+                  <img src="${img.dataUrl}">
+                  <div class="cap">${escapeHtml(img.memo || "")}</div>
+                </div>
+              `).join("")}
+            </div>
+          ` : ""}
+
+          <div class="actions">
+            <div class="leftActions">
+              <div class="likeBtn" onclick="likeReport('${r.id}')">
+                <span class="heart">♥</span>
+                <span>いいね</span>
+                <span style="color:rgba(75,85,99,0.85)">(${r.likes || 0})</span>
+              </div>
+            </div>
+            <div class="rightActions">
+              <span style="font-size:12px;color:rgba(75,85,99,0.9)">コメント: ${(r.comments || []).length}</span>
+            </div>
+          </div>
+
+          <div class="cm">
+            <div class="add">
+              <textarea id="cm_${r.id}" placeholder="コメント（例：他店でも同様。平台位置替えの再現性高い）"></textarea>
+              <button class="primary" onclick="addComment('${r.id}')">コメント追加</button>
+            </div>
+            ${(r.comments && r.comments.length) ? `
+              <ul class="list">
+                ${r.comments.map(c => `<li>${escapeHtml(c)}</li>`).join("")}
+              </ul>
+            ` : ""}
+          </div>
+
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function refreshWeekOptions(){
+  const sel = document.getElementById("fWeek");
+  const current = sel.value;
+  const weeks = Array.from(new Set(reports.map(r => r.week).filter(Boolean))).sort().reverse();
+  const opts = [`<option value="">週：全て</option>`].concat(
+    weeks.map(w => `<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`)
+  ).join("");
+  sel.innerHTML = opts;
+  if(weeks.includes(current)) sel.value = current;
+  else sel.value = "";
+}
+function updateKpis(){
+  document.getElementById("kpiTotal").textContent = reports.length;
+  document.getElementById("kpiWeek").textContent = getCurrentIsoWeekInputValue();
+}
+
+/* =========================
+   Import / Export / Clear
+========================= */
+function clearAll(){
+  if(!confirm("ブラウザ内の全投稿データを削除します。よろしいですか？")) return;
+  reports = [];
+  localStorage.removeItem("fm_reports_v2");
+  resetForm();
+  refreshWeekOptions();
+  updateKpis();
+  render();
+}
+function exportJson(){
+  const data = JSON.stringify(reports, null, 2);
+  const blob = new Blob([data], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "fm_reports_export.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+function importJson(){
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "application/json";
+  input.onchange = async () => {
+    const file = input.files?.[0];
+    if(!file) return;
+    const txt = await file.text();
+    try{
+      const obj = JSON.parse(txt);
+      if(!Array.isArray(obj)) throw new Error("配列ではありません");
+      const map = new Map(reports.map(r => [r.id, r]));
+      obj.forEach(r => { if(r && r.id) map.set(r.id, r); });
+      reports = Array.from(map.values()).sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt));
+      save();
+      render();
+      alert("インポート完了");
+    }catch(e){
+      alert("読み込みに失敗しました: " + e.message);
+    }
+  };
+  input.click();
+}
+
+/* =========================
+   Init
+========================= */
+(function init(){
+  document.getElementById("week").value = getCurrentIsoWeekInputValue();
+  refreshWeekOptions();
+  updateKpis();
+  render();
+})();
+</script>
+
+</body>
+</html>
